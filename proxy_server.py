@@ -19,20 +19,17 @@ print("Heartbeat from system (system %u component %u)" % (conn.target_system, co
 key = b"0123456789abcdef"
 cipher = AES.new(key, AES.MODE_EAX)
 
-while 1:
+while 1:    
     cipher = AES.new(key, AES.MODE_EAX)
     nonce = cipher.nonce
     msg = str(conn.recv_match(blocking=True))
 
     ciphertext, tag = cipher.encrypt_and_digest(bytes(msg, 'utf-8'))
-    #print(len(nonce), len(tag), ciphertext)
-
-    time.sleep(2)
-    # msg preamble
-    ser.write(b'\xff')
+    print(nonce, tag, ciphertext)    
     
     ser.write(nonce)
     ser.write(tag)
     ser.write(ciphertext)
-    ser.write(b'\x00')
+    ser.write(b'\r\n')
+    ser.flush()
     
